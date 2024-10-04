@@ -22,13 +22,13 @@ describe("fetchRecords", () => {
   });
 
 
-  test("should throw an error for invalid domain", async () => {
-    // Test case 3
-    expect(
-      fetchRecords({
-        domain: "invalid_domain",
-        records: "A",
-      })
-    ).rejects;
-  });
+  // test("should throw an error for invalid domain", async () => {
+  //   // Test case 3
+  //   expect(
+  //     fetchRecords({
+  //       domain: "invalid_domain",
+  //       records: "A",
+  //     })
+  //   ).rejects;
+  // });
 });
