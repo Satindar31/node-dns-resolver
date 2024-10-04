@@ -27,7 +27,6 @@ const dnsTypeNames: { [key: number]: string } = {
   // Add more mappings as needed
 };
 
-
 /**
  * Fetch DNS records for a given domain.
  *
@@ -63,20 +62,28 @@ export async function fetchRecords({
     // Your logic here
     // console.log(`Fetching records for domain: ${domain}`);
 
-    const dnsRecords = await Promise.all(recordsWithValues.map(async (value) => {
-      // console.log(`Record value: ${value}`);
+    const dnsRecords = await Promise.all(
+      recordsWithValues.map(async (value) => {
+        // console.log(`Record value: ${value}`);
 
-      const res = await fetch(
-        `https://dns.google/resolve?name=${domain}&type=${value}`
-      );
-      const data = await res.json();
-      
-      return {
-        type: dnsTypeNames[data.Answer[0].type],
-        ttl: data.Answer[0].TTL,
-        data: data.Answer[0].data,
-      };
-    }));
+        const res = await fetch(
+          `https://dns.google/resolve?name=${domain}&type=${value}`
+        );
+        const data: {
+          Answer: { type: RecordType; TTL: number; data: string }[];
+        } = await res.json();
+
+        if (data.Answer && data.Answer.length > 0) {
+          return {
+            type: dnsTypeNames[data.Answer[0].type as unknown as number],
+            ttl: data.Answer[0].TTL,
+            data: data.Answer[0].data,
+          };
+        } else {
+          throw new Error(`No DNS records found for type ${value}`);
+        }
+      })
+    );
 
     return dnsRecords;
   } catch (error) {
